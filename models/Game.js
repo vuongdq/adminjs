@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const path = require('path');
 
 const gameSchema = new mongoose.Schema({
   title: {
@@ -17,11 +18,23 @@ const gameSchema = new mongoose.Schema({
   },
   file_url: {
     type: String,
-    required: true
+    required: true,
+    set: function(val) {
+      if (val && val.path) {
+        return path.basename(val.path);
+      }
+      return val;
+    }
   },
   thumbnail_url: {
     type: String,
-    required: true
+    required: true,
+    set: function(val) {
+      if (val && val.path) {
+        return path.basename(val.path);
+      }
+      return val;
+    }
   }
 }, {
   timestamps: true

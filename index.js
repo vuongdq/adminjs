@@ -6,6 +6,7 @@ const AdminJSMongoose = require('@adminjs/mongoose');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const path = require('path');
+const formidableMiddleware = require('express-formidable');
 
 // Import models
 const User = require('./models/User');
@@ -25,10 +26,8 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/gamejs
 
 // Cấu hình kết nối MongoDB
 mongoose.connect(MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-  family: 4 // Use IPv4, skip trying IPv6
+  serverSelectionTimeoutMS: 5000,
+  family: 4
 })
 .then(() => {
   console.log('Successfully connected to MongoDB.');
@@ -59,6 +58,14 @@ process.on('SIGINT', async () => {
 });
 
 // Cấu hình AdminJS
+const uploadFeature = {
+  // Define upload settings
+  upload: {
+    mimeTypes: ['application/javascript', 'text/javascript', 'image/png', 'image/jpeg', 'image/gif'],
+    maxSize: 5 * 1024 * 1024, // 5MB
+  }
+};
+
 const adminJs = new AdminJS({
   resources: [
     {
@@ -100,6 +107,42 @@ const adminJs = new AdminJS({
           category_id: {
             reference: 'Category',
           },
+          file_url: {
+            type: 'mixed',
+            isVisible: {
+              list: true,
+              edit: true,
+              filter: false,
+              show: true,
+            },
+            components: {
+              edit: AdminJS.bundle('./components/upload-file'),
+              list: AdminJS.bundle('./components/upload-file-list'),
+            },
+            custom: {
+              uploadPath: '/uploads',
+              mimeTypes: ['application/javascript', 'text/javascript'],
+              maxSize: 5 * 1024 * 1024, // 5MB
+            },
+          },
+          thumbnail_url: {
+            type: 'mixed',
+            isVisible: {
+              list: true,
+              edit: true,
+              filter: false,
+              show: true,
+            },
+            components: {
+              edit: AdminJS.bundle('./components/upload-image'),
+              list: AdminJS.bundle('./components/upload-image-list'),
+            },
+            custom: {
+              uploadPath: '/uploads',
+              mimeTypes: ['image/png', 'image/jpeg', 'image/gif'],
+              maxSize: 5 * 1024 * 1024, // 5MB
+            },
+          },
         },
       },
     },
@@ -139,6 +182,11 @@ const adminJs = new AdminJS({
     },
   ],
   rootPath: '/admin',
+  branding: {
+    companyName: 'Game Admin Panel',
+    logo: false,
+    softwareBrothers: false,
+  },
 });
 
 // Tạo router cho AdminJS
@@ -162,6 +210,13 @@ app.use(
 // Cấu hình upload directory
 const uploadDir = process.env.UPLOAD_DIR || 'uploads';
 app.use('/uploads', express.static(path.join(__dirname, uploadDir)));
+
+// Add formidable middleware for file uploads
+app.use(formidableMiddleware({
+  uploadDir: path.join(__dirname, uploadDir),
+  keepExtensions: true,
+  multiples: true,
+}));
 
 // Sử dụng AdminJS router
 app.use(adminJs.options.rootPath, router);
