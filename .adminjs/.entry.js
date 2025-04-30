@@ -1,9 +1,9 @@
 AdminJS.UserComponents = {}
-import Component0 from '../components/upload-file'
-AdminJS.UserComponents.Component0 = Component0
-import Component1 from '../components/upload-file-list'
+import Component1 from '../components/upload-file'
 AdminJS.UserComponents.Component1 = Component1
-import Component2 from '../components/upload-image'
+import Component2 from '../components/upload-file-list'
 AdminJS.UserComponents.Component2 = Component2
-import Component3 from '../components/upload-image-list'
+import Component3 from '../components/upload-image'
 AdminJS.UserComponents.Component3 = Component3
+import Component4 from '../components/upload-image-list'
+AdminJS.UserComponents.Component4 = Component4

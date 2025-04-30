@@ -104,8 +104,16 @@ const adminJs = new AdminJS({
           icon: 'Game',
         },
         properties: {
+          title: {
+            isTitle: true,
+            isRequired: true,
+          },
+          description: {
+            type: 'richtext',
+          },
           category_id: {
             reference: 'Category',
+            isRequired: true,
           },
           file_url: {
             type: 'mixed',
@@ -141,6 +149,30 @@ const adminJs = new AdminJS({
               uploadPath: '/uploads',
               mimeTypes: ['image/png', 'image/jpeg', 'image/gif'],
               maxSize: 5 * 1024 * 1024, // 5MB
+            },
+          },
+        },
+        actions: {
+          new: {
+            before: async (request) => {
+              if (request.payload.file_url) {
+                request.payload.file_url = request.payload.file_url.path;
+              }
+              if (request.payload.thumbnail_url) {
+                request.payload.thumbnail_url = request.payload.thumbnail_url.path;
+              }
+              return request;
+            },
+          },
+          edit: {
+            before: async (request) => {
+              if (request.payload.file_url) {
+                request.payload.file_url = request.payload.file_url.path;
+              }
+              if (request.payload.thumbnail_url) {
+                request.payload.thumbnail_url = request.payload.thumbnail_url.path;
+              }
+              return request;
             },
           },
         },
@@ -224,6 +256,6 @@ app.use(adminJs.options.rootPath, router);
 // Khởi động server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`AdminJS is running on http://localhost:${PORT}${adminJs.options.rootPath}`);
+  console.log(`AdminJS is running at http://localhost:${PORT}/admin`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 }); 

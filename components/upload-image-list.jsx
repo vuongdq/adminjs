@@ -9,10 +9,14 @@ const UploadImageList = (props) => {
     return null;
   }
 
+  // Xử lý đường dẫn để lấy tên file
+  const fileName = path.replace(/^.*[\\\/]/, '');
+  const imagePath = `/uploads/${fileName}`;
+
   return (
     <Box>
       <img 
-        src={`/uploads/${path}`} 
+        src={imagePath} 
         alt="Thumbnail" 
         style={{ maxWidth: '100px' }}
       />

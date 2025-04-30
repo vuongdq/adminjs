@@ -9,10 +9,14 @@ const UploadFileList = (props) => {
     return null;
   }
 
+  // Xử lý đường dẫn để lấy tên file
+  const fileName = path.replace(/^.*[\\\/]/, '');
+  const filePath = `/uploads/${fileName}`;
+
   return (
     <Box>
-      <Link href={`/uploads/${path}`} target="_blank">
-        {path}
+      <Link href={filePath} target="_blank">
+        {fileName}
       </Link>
     </Box>
   );
